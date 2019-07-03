@@ -5,6 +5,7 @@ using System.Text;
 using Npgsql;
 using System.Threading;
 using System.Threading.Tasks;
+using EosDataScraper.Common;
 using EosDataScraper.Models;
 
 namespace EosDataScraper.DataAccess

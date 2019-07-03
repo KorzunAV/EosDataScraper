@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Npgsql;
 
-namespace EosDataScraper.DataAccess
+namespace EosDataScraper.Common.DataAccess
 {
     public static class SystemAccessor
     {

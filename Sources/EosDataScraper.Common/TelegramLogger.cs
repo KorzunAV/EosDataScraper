@@ -4,7 +4,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace EosDataScraper
+namespace EosDataScraper.Common
 {
     public class TelegramLogger : ILogger
     {

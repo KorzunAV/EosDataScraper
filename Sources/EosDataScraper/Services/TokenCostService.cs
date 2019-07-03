@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Ditch.EOS.Models;
+using EosDataScraper.Common;
+using EosDataScraper.Common.Services;
 using EosDataScraper.DataAccess;
 using EosDataScraper.Models;
 using Microsoft.Extensions.Configuration;

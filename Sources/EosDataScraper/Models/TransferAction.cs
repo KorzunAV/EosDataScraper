@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using Ditch.EOS.Models;
-using EosDataScraper.DataAccess;
+using EosDataScraper.Common;
 using Newtonsoft.Json;
 using Npgsql;
 using NpgsqlTypes;

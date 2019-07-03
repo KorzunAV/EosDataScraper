@@ -2,12 +2,12 @@
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace EosDataScraper.Services
+namespace EosDataScraper.Common.Services
 {
     public abstract class BaseDbService : IHostedService, IDisposable
     {

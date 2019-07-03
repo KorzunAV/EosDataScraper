@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EosDataScraper.Services
+namespace EosDataScraper.Common.Services
 {
     public interface IBackgroundTaskQueue
     {

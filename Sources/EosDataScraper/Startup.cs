@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using EosDataScraper.Common;
 using EosDataScraper.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;

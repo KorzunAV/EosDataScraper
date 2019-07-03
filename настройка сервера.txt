@@ -1,6 +1,8 @@
 ssh root@165.22.27.85 - боевой 18.04
 1. ssh eosdatascraper@142.93.109.102 / eosdata.services  -добавить права /root/.ssh/authorized_keys
 
+настройка сервера https://www.junian.net/aspnet-core-mysql-ubuntu-16-04/
+
 --------------------------------------------------------- установка postgresql 10 -----------------------------------------------------------------------------------------------
 
 Create the file /etc/apt/sources.list.d/pgdg.list and add a line for the repository
@@ -48,58 +50,36 @@ SHOW data_directory;
 sudo rm -Rf /var/lib/postgresql/10/main.bak
 sudo systemctl restart postgresql
 sudo systemctl status postgresql
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--------------------------------------------Install .NET Core 2.1.300 SDK on Linux Ubuntu 18.04 - x64-----------------------------------------------------------------------------
-
-wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-sudo dpkg -i packages-microsoft-prod.deb
 
 
-
-
-https://dappradar.com
-AUTH_HEADER = 'Bearer 5b7408208e6dc800013eb6b5bf1326afcab148bea87262c9767cfe8b'
-APP_INFO_URL = 'https://dappradar.cloud.tyk.io/api/dapp/{app_number}'
-app_number - это просто число
-
-https://erc20crawler.com/docs/
-
-
-sudo -u postgres createdb sammy
-
-настройка сервера 
-https://www.junian.net/aspnet-core-mysql-ubuntu-16-04/
-
-настройка postgresql https://www.digitalocean.com/community/tutorials/postgresql-ubuntu-16-04-ru
-
-Переключение на аккаунт postgress
-sudo -i -u postgres psql
-
-Открываем БД и исполняем init.sql
---------------
-Подключение к БД
-
-sudo -i -u postgres psql    |  если не работает то > sudo -i > su postgres > psql | psql -U postgres -W | postgres B048784518C040F6B233D6A602F2AB84
-\connect eos_data_scraper  | \connect eos_data_light
-SELECT * FROM pg_stat_activity;
-SELECT relname AS "table_name", relpages * 8 AS "size_in_pages" FROM pg_class ORDER BY relpages desc LIMIT 10;
-SELECT MAX(block_num),COUNT(block_num),NOW() FROM block;
-SELECT COUNT(block_num),NOW() FROM transfer;
-\dt	
-
------
 копия
 pg_dump -C -h localhost -U postgres eos_data_light | psql -h 165.227.161.25 -U postgres eos_data_light
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------Install .NET Core SDK on Linux Ubuntu 18.04 - x64-----------------------------------------------------------------------------
 
+sudo add-apt-repository universe
+sudo apt-get install apt-transport-https
+sudo apt-get update
+sudo apt-get install dotnet-sdk-2.2
 
----------------------запуск проекта----------------------
-cd eosdatascraper
-sudo git pull
-cd Source/EosDataScraper
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------Clone App-----------------------------------------------------------------------------------------------
+sudo git clone https://github.com/KorzunAV/EosDataScraper.git
+cd EosDataScraper/Sources/
 sudo dotnet publish -c Release -o /var/www/eosdatascraper
 
--------------Настройка systemd-------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------BD-------------------------------------------------------------------------------------------------
+
+sudo -i -u postgres psql    |  если не работает то > sudo -i > su postgres > psql | psql -U postgres -W | postgres B048784518C040F6B233D6A602F2AB84
+...create db
+\connect eos_data_light
+...create tables
+\dt	
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------systemd--------------------------------------------------------------------------------------------------------
 sudo -E vim /etc/systemd/system/kestrel-eosdatascraper.service
 --------------------------------------------------->
 [Unit]  
@@ -124,87 +104,10 @@ systemctl status kestrel-eosdatascraper.service
 sudo systemctl stop kestrel-eosdatascraper.service
 sudo systemctl restart kestrel-eosdatascraper.service
 
---------------
-Обновление
-cd ~/eosdatascraper
-git pull
-cd Sources/EosDataScraper
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------Installing Nginx---------------------------------------------------------------------------------------------------
+sudo apt-get install nginx
 
-sudo systemctl stop kestrel-eosdatascraper.service
-sudo dotnet publish -c Release -o /var/www/eosdatascraper
-sudo systemctl start kestrel-eosdatascraper.service
-
-curl http://localhost:5042/api/home
-
-----------------
-Nginx
-
-sudo -E vim /etc/nginx/sites-available/default
-sudo nginx -t
-sudo nginx -s reload
-curl -L https://eosdata.services/.well-known/acme-challenge/example.html
--------------
-SSL
-apt-get update
-apt-get install git
-cd /tmp
-git clone https://github.com/certbot/certbot
-cd certbot
-./letsencrypt-auto certonly --standalone -d eosdata.services
-
-- Congratulations! Your certificate and chain have been saved at:
-   /etc/letsencrypt/live/eosdata.services/fullchain.pem
-   Your key file has been saved at:
-   /etc/letsencrypt/live/eosdata.services/privkey.pem
-   Your cert will expire on 2019-02-12. To obtain a new or tweaked
-   version of this certificate in the future, simply run
-   letsencrypt-auto again. To non-interactively renew *all* of your
-   certificates, run "letsencrypt-auto renew"
- - Your account credentials have been saved in your Certbot
-   configuration directory at /etc/letsencrypt. You should make a
-   secure backup of this folder now. This configuration directory will
-   also contain certificates and private keys obtained by Certbot so
-   making regular backups of this folder is ideal.
- - If you like Certbot, please consider supporting our work by:
-
-   Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
-   Donating to EFF:                    https://eff.org/donate-le
-   
-
-текстовый редактор https://docs.altlinux.org/ru-RU/archive/2.3/html-single/junior/alt-docs-extras-linuxnovice/ch02s10.html
-
-
-sudo curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-
-
-
-
--------------Installing .NET Core-------------------
-https://www.microsoft.com/net/download/linux-package-manager/ubuntu16-04/sdk-current
-
--------------Installing Nginx-------------
-$ sudo apt-get install nginx
-
--------------Installing PostgreSQL-------------
-https://www.postgresql.org/download/linux/ubuntu/
-
-Подключение к БД
-sudo -i -u postgres psql
-\connect eos_data_scraper
-\dt	
-добавление пароля
-sudo -u postgres psql
-alter user eos_data_scraper_user with encrypted password '123456789';
-
--------------Установка сертификата-------------
-apt-get update
-apt-get install git
-cd /tmp
-git clone https://github.com/certbot/certbot
-cd certbot
-./letsencrypt-auto certonly --standalone -d eosdata.services
-
--------------Настройка nginx-------------
 sudo -E vim /etc/nginx/sites-available/default
 server {
     listen 443 ssl;
@@ -255,34 +158,57 @@ server {
 sudo nginx -t
 sudo nginx -s reload
 
+-------------Установка сертификата-------------
+curl -L https://eosdata.services/.well-known/acme-challenge/example.html
+-------------
+SSL
+apt-get update
+apt-get install git
+cd /tmp
+git clone https://github.com/certbot/certbot
+cd certbot
+./letsencrypt-auto certonly --standalone -d eosdata.services
+
+- Congratulations! Your certificate and chain have been saved at:
+   /etc/letsencrypt/live/eosdata.services/fullchain.pem
+   Your key file has been saved at:
+   /etc/letsencrypt/live/eosdata.services/privkey.pem
+   Your cert will expire on 2019-02-12. To obtain a new or tweaked
+   version of this certificate in the future, simply run
+   letsencrypt-auto again. To non-interactively renew *all* of your
+   certificates, run "letsencrypt-auto renew"
+ - Your account credentials have been saved in your Certbot
+   configuration directory at /etc/letsencrypt. You should make a
+   secure backup of this folder now. This configuration directory will
+   also contain certificates and private keys obtained by Certbot so
+   making regular backups of this folder is ideal.
+ - If you like Certbot, please consider supporting our work by:
+
+   Donating to ISRG / Let's Encrypt:   https://letsencrypt.org/donate
+   Donating to EFF:                    https://eff.org/donate-le
+   
+
+текстовый редактор https://docs.altlinux.org/ru-RU/archive/2.3/html-single/junior/alt-docs-extras-linuxnovice/ch02s10.html
 
 
-------------------------https://www.junian.net/aspnet-core-mysql-ubuntu-16-04/------------------------
-$ sudo sh -c 'echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ xenial main" > /etc/apt/sources.list.d/dotnetdev.list'  
-$ sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 417A0893  
-$ sudo apt-get install apt-transport-https
-$ sudo apt-get update  
-$ sudo apt-get install aspnetcore-runtime-2.1
-$ sudo apt-get install dotnet-dev-1.0.1
+sudo curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 
-https://dotnet.microsoft.com/download/linux-package-manager/ubuntu16-04/sdk-2.1.504
-https://dotnet.microsoft.com/download/dotnet-core/2.1
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+https://dappradar.com
+AUTH_HEADER = 'Bearer 5b7408208e6dc800013eb6b5bf1326afcab148bea87262c9767cfe8b'
+APP_INFO_URL = 'https://dappradar.cloud.tyk.io/api/dapp/{app_number}'
+app_number - это просто число
 
+https://erc20crawler.com/docs/
 
-Install App
-mkdir eosdatascraper
-git clone https://github.com/pmartynov/eosdatascraper.git
+--------------
+Обновление
+cd ~/eosdatascraper
 git pull
-sudo dotnet publish -c Release -o /var/www/eosdatascraper
+cd Sources/EosDataScraper
 
-
-sudo systemctl enable kestrel-eosdatascraper.service
-sudo systemctl start kestrel-eosdatascraper.service
-systemctl status kestrel-eosdatascraper.service
 sudo systemctl stop kestrel-eosdatascraper.service
-sudo systemctl restart kestrel-eosdatascraper.service
+sudo dotnet publish -c Release -o /var/www/eosdatascraper
+sudo systemctl start kestrel-eosdatascraper.service
 
-место на диске
-df -h
-
-
+curl http://localhost:5042/api/home

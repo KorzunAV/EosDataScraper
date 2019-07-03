@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using EosDataScraper.Common.Services;
 using EosDataScraper.DataAccess;
 using EosDataScraper.Models;
 using Microsoft.Extensions.Configuration;

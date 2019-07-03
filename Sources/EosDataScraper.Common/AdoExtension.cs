@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Data.Common;
-using Ditch.EOS.Models;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace EosDataScraper.DataAccess
+namespace EosDataScraper.Common
 {
     public static class AdoExtension
     {
@@ -69,15 +68,7 @@ namespace EosDataScraper.DataAccess
         #endregion
 
         #region DbDataReader
-
-        public static StatusEnum? GetNullableStatusEnum(this DbDataReader reader, int col)
-        {
-            var value = reader.GetValue(col);
-            if (value == DBNull.Value)
-                return null;
-            return (StatusEnum)(short)value;
-        }
-
+        
         public static long GetLongOrDefault(this DbDataReader reader, int col)
         {
             if (reader.IsDBNull(col))
@@ -142,14 +133,6 @@ namespace EosDataScraper.DataAccess
         {
             if (value.HasValue)
                 binaryImporter.Write(value.Value, NpgsqlDbType.Bigint);
-            else
-                binaryImporter.WriteNull();
-        }
-
-        public static void WriteValue(this NpgsqlBinaryImporter binaryImporter, StatusEnum? value)
-        {
-            if (value.HasValue)
-                binaryImporter.Write((byte)value.Value, NpgsqlDbType.Smallint);
             else
                 binaryImporter.WriteNull();
         }

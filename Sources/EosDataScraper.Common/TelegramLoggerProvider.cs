@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace EosDataScraper
+namespace EosDataScraper.Common
 {
     public class TelegramLoggerProvider : ILoggerProvider
     {

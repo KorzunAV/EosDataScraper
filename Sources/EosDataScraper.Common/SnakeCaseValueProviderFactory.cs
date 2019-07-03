@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace EosDataScraper
+namespace EosDataScraper.Common
 {
     public class SnakeCaseValueProviderFactory : IValueProviderFactory
     {

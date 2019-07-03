@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EosDataScraper.Services
+namespace EosDataScraper.Common.Services
 {
     public class BackgroundTaskQueue : IBackgroundTaskQueue
     {

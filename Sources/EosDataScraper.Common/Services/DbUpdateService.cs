@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using EosDataScraper.DataAccess;
+using EosDataScraper.Common.DataAccess;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace EosDataScraper.Services
+namespace EosDataScraper.Common.Services
 {
     public class DbUpdateService : BaseDbService
     {

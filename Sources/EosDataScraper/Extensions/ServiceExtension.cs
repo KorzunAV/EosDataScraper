@@ -1,4 +1,6 @@
-﻿using EosDataScraper.Services;
+﻿using EosDataScraper.Common;
+using EosDataScraper.Common.Services;
+using EosDataScraper.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

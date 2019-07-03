@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 using Cryptography.ECDSA;
 using Ditch.EOS.Models;
-using EosDataScraper.DataAccess;
+using EosDataScraper.Common;
+using EosDataScraper.Extensions;
 using Newtonsoft.Json;
 using Npgsql;
 

@@ -12,5 +12,9 @@
     <PackageReference Include="Npgsql" Version="4.0.7" />
     <PackageReference Include="Telegram.Bot" Version="14.12.0" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\EosDataScraper.Common\EosDataScraper.Common.csproj" />
+  </ItemGroup>
 
 </Project>

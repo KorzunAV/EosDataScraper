@@ -6,6 +6,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using EosDataScraper.Common;
+using EosDataScraper.Extensions;
 using EosDataScraper.Models;
 using Npgsql;
 
