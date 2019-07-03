@@ -1,4 +1,61 @@
-ssh eosdatascraper@142.93.109.102 - боевой
+ssh root@165.22.27.85 - боевой 18.04
+1. ssh eosdatascraper@142.93.109.102 / eosdata.services  -добавить права /root/.ssh/authorized_keys
+
+--------------------------------------------------------- установка postgresql 10 -----------------------------------------------------------------------------------------------
+
+Create the file /etc/apt/sources.list.d/pgdg.list and add a line for the repository
+deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main
+Import the repository signing key, and update the package lists
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt-get update
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------Move postgresql----------------------------------------------------------------------------------------------------
+df -h  - размер по дискам
+du -hs - размер папки
+>-----------------------------
+Filesystem      Size  Used Avail Use% Mounted on
+udev            985M     0  985M   0% /dev
+tmpfs           200M  636K  199M   1% /run
+/dev/vda1        49G  1.1G   48G   3% /
+tmpfs           997M  8.0K  997M   1% /dev/shm
+tmpfs           5.0M     0  5.0M   0% /run/lock
+tmpfs           997M     0  997M   0% /sys/fs/cgroup
+/dev/vda15      105M  3.6M  101M   4% /boot/efi
+/dev/sda        149G   61M  142G   1% /mnt/volume_fra1_02
+tmpfs           200M     0  200M   0% /run/user/0
+
+<-----------------------------
+sudo -u postgres psql
+SHOW data_directory;
+>-----------------------------
+ /var/lib/postgresql/10/main   |  /mnt/volume_fra1_02/postgresql/10/main
+<-----------------------------
+\q
+sudo systemctl stop postgresql
+sudo systemctl status postgresql
+sudo rsync -av /var/lib/postgresql /mnt/volume_fra1_02                    
+-- sudo rsync -av /mnt/volume_fra1_02/postgresql /var/lib
+sudo mv /var/lib/postgresql/10/main /var/lib/postgresql/10/main.bak
+sudo vim /etc/postgresql/10/main/postgresql.conf
+. . .
+data_directory = '/mnt/volume_fra1_02/postgresql/10/main'                  | data_directory = '/var/lib/postgresql/10/main'
+. . .
+sudo systemctl start postgresql
+sudo systemctl status postgresql
+sudo -u postgres psql
+SHOW data_directory;
+\q
+sudo rm -Rf /var/lib/postgresql/10/main.bak
+sudo systemctl restart postgresql
+sudo systemctl status postgresql
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------Install .NET Core 2.1.300 SDK on Linux Ubuntu 18.04 - x64-----------------------------------------------------------------------------
+
+wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+
+
+
 
 https://dappradar.com
 AUTH_HEADER = 'Bearer 5b7408208e6dc800013eb6b5bf1326afcab148bea87262c9767cfe8b'
@@ -7,9 +64,6 @@ app_number - это просто число
 
 https://erc20crawler.com/docs/
 
-1. ssh eosdatascraper@142.93.109.102 / eosdata.services  -добавить права /root/.ssh/authorized_keys
-2. установка докера https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository
-2.1. Update the apt package index: $ sudo apt-get update
 
 sudo -u postgres createdb sammy
 
@@ -17,6 +71,7 @@ sudo -u postgres createdb sammy
 https://www.junian.net/aspnet-core-mysql-ubuntu-16-04/
 
 настройка postgresql https://www.digitalocean.com/community/tutorials/postgresql-ubuntu-16-04-ru
+
 Переключение на аккаунт postgress
 sudo -i -u postgres psql
 
@@ -79,9 +134,7 @@ sudo systemctl stop kestrel-eosdatascraper.service
 sudo dotnet publish -c Release -o /var/www/eosdatascraper
 sudo systemctl start kestrel-eosdatascraper.service
 
-curl http://localhost:5000/api/transfer
-curl https://localhost:5001/api/transfer
-curl https://eosdata.services/api/transfer
+curl http://localhost:5042/api/home
 
 ----------------
 Nginx
@@ -173,7 +226,7 @@ server {
     }
 
     location / {
-        proxy_pass http://localhost:5000;
+        proxy_pass http://localhost:5042;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection keep-alive;
@@ -190,7 +243,7 @@ server {
     return 301 https://eosdata.services$request_uri;
 
     #location / {
-    #    proxy_pass http://localhost:5000;
+    #    proxy_pass http://localhost:5042;
     #    proxy_http_version 1.1;
     #    proxy_set_header Upgrade $http_upgrade;
     #    proxy_set_header Connection keep-alive;
@@ -223,56 +276,13 @@ git pull
 sudo dotnet publish -c Release -o /var/www/eosdatascraper
 
 
-systemctl enable kestrel-eosdatascraper.service
-systemctl start kestrel-eosdatascraper.service
+sudo systemctl enable kestrel-eosdatascraper.service
+sudo systemctl start kestrel-eosdatascraper.service
 systemctl status kestrel-eosdatascraper.service
-systemctl stop kestrel-eosdatascraper.service
-systemctl restart kestrel-eosdatascraper.service
+sudo systemctl stop kestrel-eosdatascraper.service
+sudo systemctl restart kestrel-eosdatascraper.service
 
 место на диске
 df -h
 
 
-------------------------Move postgresql------------------------
-df -h  - размер по дискам
-du -hs - размер папки
->-----------------------------
-Filesystem      Size  Used Avail Use% Mounted on
-udev            992M     0  992M   0% /dev
-tmpfs           201M   21M  180M  11% /run
-/dev/vda1        49G   31G   18G  65% /
-tmpfs          1001M   20K 1001M   1% /dev/shm
-tmpfs           5.0M     0  5.0M   0% /run/lock
-tmpfs          1001M     0 1001M   0% /sys/fs/cgroup
-/dev/vda15      105M  3.4M  101M   4% /boot/efi
-/dev/sda        100G   60M   95G   1% /mnt/volume_eos
-tmpfs           201M     0  201M   0% /run/user/1000
-<-----------------------------
-sudo -u postgres psql
-SHOW data_directory;
->-----------------------------
- /var/lib/postgresql/10/main   |  /mnt/volume_eos/postgresql/10/main
-<-----------------------------
-\q
-sudo systemctl stop kestrel-eosdatascraper.service
-systemctl status kestrel-eosdatascraper.service
-sudo systemctl stop postgresql
-sudo systemctl status postgresql
-sudo rsync -av /var/lib/postgresql /mnt/volume_eos                     | sudo rsync -av /mnt/volume_eos/postgresql /var/lib
---sudo rsync -av /var/lib/postgresql /mnt/volume_fra1_01                     | sudo rsync -av /mnt/volume_fra1_01/postgresql /var/lib
-sudo mv /var/lib/postgresql/10/main /var/lib/postgresql/10/main.bak
-sudo vim /etc/postgresql/10/main/postgresql.conf
-. . .
-data_directory = '/mnt/volume_eos/postgresql/10/main'                  | data_directory = '/var/lib/postgresql/10/main'
---data_directory = '/mnt/volume_fra1_01/postgresql/10/main'                  | data_directory = '/var/lib/postgresql/10/main'
-. . .
-sudo systemctl start postgresql
-sudo systemctl status postgresql
-sudo -u postgres psql
-SHOW data_directory;
-\q
-sudo rm -Rf /var/lib/postgresql/10/main.bak
-sudo systemctl restart postgresql
-sudo systemctl status postgresql
-sudo systemctl start kestrel-eosdatascraper.service
-systemctl status kestrel-eosdatascraper.service
