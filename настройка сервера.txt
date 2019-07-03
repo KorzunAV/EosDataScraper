@@ -67,7 +67,8 @@ sudo apt-get install dotnet-sdk-2.2
 -------------------------------------------------------------------------Clone App-----------------------------------------------------------------------------------------------
 sudo git clone https://github.com/KorzunAV/EosDataScraper.git
 cd EosDataScraper/Sources/
-sudo dotnet publish -c Release -o /var/www/eosdatascraper
+sudo dotnet publish EosDataScraper.Service.sln -c Release -o /var/www/eosdatascraper
+sudo dotnet publish EosDataScraper.Api.sln -c Release -o /var/www/eosdatascraper_api
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------BD-------------------------------------------------------------------------------------------------
@@ -104,6 +105,32 @@ systemctl status kestrel-eosdatascraper.service
 sudo systemctl stop kestrel-eosdatascraper.service
 sudo systemctl restart kestrel-eosdatascraper.service
 
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------
+sudo -E vim /etc/systemd/system/kestrel-eosdatascraper_api.service
+--------------------------------------------------->
+[Unit]  
+Description=eosdatascraper Kestrel Service  
+  
+[Service]  
+WorkingDirectory=/var/www/eosdatascraper_api
+ExecStart=/usr/bin/dotnet /var/www/eosdatascraper_api/EosDataScraper.Api.dll  
+Restart=always
+RestartSec=10 # Restart service after 10 seconds if dotnet service crashes  
+SyslogIdentifier=dotnet-eosdatascraper  
+User=www-data  
+Environment=ASPNETCORE_ENVIRONMENT=Production  
+  
+[Install]  
+WantedBy=multi-user.target  
+<---------------------------------------------------
+sudo systemctl enable kestrel-eosdatascraper_api.service
+sudo systemctl start kestrel-eosdatascraper_api.service
+systemctl status kestrel-eosdatascraper_api.service
+
+sudo systemctl stop kestrel-eosdatascraper_api.service
+sudo systemctl restart kestrel-eosdatascraper_api.service
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --------------------------------------------------------------Installing Nginx---------------------------------------------------------------------------------------------------
 sudo apt-get install nginx
@@ -128,6 +155,32 @@ server {
         return 400 $http_host;
     }
 
+    location /api/v1 {
+        proxy_pass http://localhost:5742/api/v1;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection keep-alive;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+	location /swagger {
+        proxy_pass http://localhost:5742/swagger;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection keep-alive;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+	
+    location / {
+        proxy_pass http://localhost:5042/api/v1/home;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection keep-alive;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+	
     location / {
         proxy_pass http://localhost:5042;
         proxy_http_version 1.1;
