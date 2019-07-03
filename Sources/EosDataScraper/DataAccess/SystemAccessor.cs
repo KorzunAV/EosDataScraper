@@ -65,7 +65,7 @@ namespace EosDataScraper.DataAccess
 
             var result = await command.ExecuteScalarAsync(token);
             if (result is DBNull || result is null)
-                return default;
+                return default(T);
 
             return Newtonsoft.Json.JsonConvert.DeserializeObject<T>((string)result);
         }

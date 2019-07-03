@@ -1,4 +1,4 @@
-ssh root@165.227.161.25 - боевой
+ssh eosdatascraper@142.93.109.102 - боевой
 
 https://dappradar.com
 AUTH_HEADER = 'Bearer 5b7408208e6dc800013eb6b5bf1326afcab148bea87262c9767cfe8b'
@@ -19,30 +19,10 @@ https://www.junian.net/aspnet-core-mysql-ubuntu-16-04/
 настройка postgresql https://www.digitalocean.com/community/tutorials/postgresql-ubuntu-16-04-ru
 Переключение на аккаунт postgress
 sudo -i -u postgres psql
+
+Открываем БД и исполняем init.sql
 --------------
-Открываем БД и даем роли
-
-CREATE ROLE ro_eos_data_light WITH LOGIN PASSWORD '4B77EA4730954DCD91800D957FB3A464' 
-NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION VALID UNTIL 'infinity';
-
-GRANT CONNECT ON DATABASE eos_data_light TO ro_eos_data_light;
-GRANT USAGE ON SCHEMA public TO ro_eos_data_light;
-GRANT SELECT ON ALL TABLES IN SCHEMA public TO ro_eos_data_light;
-GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO ro_eos_data_light;
-
-
-postgres B048784518C040F6B233D6A602F2AB84
---------------
-
-создание роли
-dropuser eos_data_scraper_user
-createuser -D -e -l -P -R -S eos_data_scraper_user | createuser -D -e -l -P -R -S eos_data_light_user 
-createuser -P -s -e eos_data_scraper_usersystemctl
-создание бд
-
-
 Подключение к БД
-pg_dump -C -h localhost -U postgres eos_data_light | psql -h 165.227.161.25 -U postgres eos_data_light
 
 sudo -i -u postgres psql    |  если не работает то > sudo -i > su postgres > psql | psql -U postgres -W | postgres B048784518C040F6B233D6A602F2AB84
 \connect eos_data_scraper  | \connect eos_data_light
@@ -51,6 +31,10 @@ SELECT relname AS "table_name", relpages * 8 AS "size_in_pages" FROM pg_class OR
 SELECT MAX(block_num),COUNT(block_num),NOW() FROM block;
 SELECT COUNT(block_num),NOW() FROM transfer;
 \dt	
+
+-----
+копия
+pg_dump -C -h localhost -U postgres eos_data_light | psql -h 165.227.161.25 -U postgres eos_data_light
 
 
 
