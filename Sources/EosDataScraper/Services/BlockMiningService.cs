@@ -20,6 +20,7 @@ namespace EosDataScraper.Services
         private readonly List<DownloadWorker> _workers = new List<DownloadWorker>();
         private const int MaxDownloadWorkerSetCount = 50;
         private List<NodeInfo> _nodes;
+        private List<DownloadWorker> _workersAll;
 
         private long _lastIrreversibleBlockNum = -1;
         private int _workerCount;
@@ -56,15 +57,31 @@ namespace EosDataScraper.Services
         public async Task InitCashAsync(NpgsqlConnection connection, long startBlock, int count, CancellationToken token)
         {
             if (_nodes == null)
+            {
                 _nodes = await connection.GetAllNodeInfo(token)
                     .ConfigureAwait(false);
+                _workersAll = _nodes
+                    .Select(n => new DownloadWorker(n, this))
+                    .ToList();
+            }
 
             _workerCount = 0;
 
-            var nodes = _lastIrreversibleBlockNum > -1 ? _nodes.Where(n => n.LastIrreversibleBlockNum > _lastIrreversibleBlockNum / 2) : _nodes;
-            var allWorkers = nodes
-                .Select(n => new DownloadWorker(n, this))
-                .ToArray();
+            List<DownloadWorker> allWorkers;
+            if (_lastIrreversibleBlockNum > -1)
+            {
+                allWorkers = new List<DownloadWorker>();
+                for (var i = 0; i < _nodes.Count; i++)
+                {
+                    if (_nodes[i].LastIrreversibleBlockNum > _lastIrreversibleBlockNum / 2)
+                        allWorkers.Add(_workersAll[i]);
+                }
+            }
+            else
+            {
+                allWorkers = _workersAll;
+            }
+
 
             if (startBlock + count > _lastIrreversibleBlockNum)
             {
