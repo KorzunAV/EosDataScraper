@@ -102,8 +102,8 @@ namespace EosDataScraper.Services
 
             if (isLastBlock)
             {
-                await connection.AddPrimaryKeyAndRelations(token);
-                await connection.AddPartitionsPrimaryKeyAndRelations(token);
+                //await connection.AddPrimaryKeyAndRelations(token);
+                //await connection.AddPartitionsPrimaryKeyAndRelations(token);
                 await connection.UpdateDelayedTokenAsync(token);
                 await connection.UpdateDelayedTransferAsync(token);
                 await connection.UpdateTransferInfo(token);
